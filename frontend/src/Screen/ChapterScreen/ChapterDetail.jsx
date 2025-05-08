@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getCurrentParams } from "../../utils/utils";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const ChapterDetail = () => {
   const location = useLocation();
@@ -13,7 +14,7 @@ const ChapterDetail = () => {
   useEffect(() => {
     const fetchChapter = async () => {
       try {
-        const response = await axios.get(`/api/chapters/${param}`);
+        const response = await axios.get(`${API_BASE_URL}/chapters/${param}`);
         setChapter(response.data);
         setComments(response.data.comments);
       } catch (error) {
@@ -27,7 +28,7 @@ const ChapterDetail = () => {
   const handleCommentSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.post(`/api/chapters/${param}`, {
+      const response = await axios.post(`${API_BASE_URL}/chapters/${param}`, {
         user: "User Example",
         chapterId: param,
         content: comment,

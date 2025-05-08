@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 const HomePage = () => {
   const [books, setBooks] = useState([]);
 
   useEffect(() => {
     const fetchBooks = async () => {
       try {
-        const response = await axios.get("/api/books");
+        const response = await axios.get(`${API_BASE_URL}/books`);
         setBooks(response.data);
       } catch (error) {
         console.log("Error when trying to call API", error);

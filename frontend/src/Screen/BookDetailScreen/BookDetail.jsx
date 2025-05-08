@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { getCurrentParams } from "../../utils/utils";
 import axios from "axios";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const BookDetail = () => {
   const location = useLocation();
@@ -11,7 +12,7 @@ const BookDetail = () => {
   useEffect(() => {
     const fetchBook = async () => {
       try {
-        const response = await axios.get(`/api/books/${params}`);
+        const response = await axios.get(`${API_BASE_URL}/books/${params}`);
         setBook(response.data);
       } catch (error) {
         console.log(`Error ${error}`);
