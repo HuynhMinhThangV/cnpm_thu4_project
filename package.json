@@ -2,7 +2,7 @@
   "scripts": {
     "start": "node backend/server.js",
     "server": "nodemon backend/server.js",
-    "client": "npm start --prefix frontend",
+    "client": "npm run dev --prefix frontend",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "data:import": "node backend/seeder",
     "data:destroy": "node backend/seeder -d",
@@ -12,6 +12,7 @@
   "type": "module",
   "dependencies": {
     "bcryptjs": "^3.0.2",
+    "concurrently": "^9.1.2",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
@@ -19,5 +20,8 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.14.1",
     "nodemon": "^3.1.10"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.21"
   }
 }
