@@ -18,6 +18,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/books", bookroutes);
+//4.1.4.File server.js(backend/server.js) đăng ký route /api/chapter xử lý các logic liên quan đến chapter
 app.use("/api/chapters", chapterroutes);
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
