@@ -1,56 +1,77 @@
 import Book from "../models/bookmodel.js";
+import User from "../models/usermodel.js"; // Giả định model User
 
+// 1.0.11: Được gọi từ chapterroutes.js để lấy nội dung chương
 const getChapter = async (req, res) => {
   const chapterId = req.params.id;
+  const userId = req.user?.id; // Giả định lấy từ middleware đăng nhập
   try {
-    const book = await Book.findOne({ "chapters._id": chapterId });
-    if (!book) {
-      res.status(404).json({ message: "Không tìm thấy chapter" });
-    }
-    const chapter = book.chapters.id(chapterId);
-    if (!chapter) {
-      return res.status(404).json({ message: "Không tìm thấy chương." });
-    }
-
-    return res.json(chapter);
-  } catch (error) {
-    console.error("Lỗi khi truy vấn chapter:", error);
-    return res.status(500).json({ message: "Lỗi server." });
-  }
-};
-const addComment = async (req, res) => {
-  const { chapterId, content, user } = req.body;
-  try {
-    if (!chapterId || !content || !user) {
-      return res
-        .status(400)
-        .json({ message: "Dữ liệu bình luận không hợp lệ." });
-    }
-    //4.1.4. Lấy ra truyện/sách có chương có id tương ứng với id nhận được từ request
-    const book = await Book.findOne({ "chapters._id": chapterId });
-    if (!book) {
-      //4.1.4.1. Kiểm tra nếu không lấy ra được sách/truyện với id chương truyện tương ứng,
-      // đặt status code là 404 và trả về json với thông diệp là Không tìm thấy sách.
-      res.status(404).json({ message: "Không tìm thấy sách" });
-    }
-    //4.1.5. Lấy ra chương truyện/sách có id trùng với id nhận được từ request.
-    const chapter = book.chapters.id(chapterId);
-    if (!chapter) {
-      //4.1.5.1. Kiểm tra nếu không lấy ra được chương sách/truyện với id chương truyện tương ứng,
-      // đặt status code là 404 và trả về json với thông diệp là Không tìm thấy chương truyện.
+    // 1.0.12: Truy vấn MongoDB Atlas (doctruyenDB, collection Books, trường chapters)
+    const book = await Book.findOne({ "chapters._id": chapterId }, { "chapters.$": 1 });
+    // 1.0.13: MongoDB trả về nội dung chương
+    if (book && book.chapters.length > 0) {
+      const chapter = book.chapters[0];
+      // 1.0.14: Nếu độc giả đăng nhập, cập nhật trạng thái "đã đọc"
+      if (userId) {
+        try {
+          // 1.0.15: MongoDB xác nhận cập nhật
+          await User.updateOne(
+            { "_id": userId },
+            { $addToSet: { readChapters: chapterId } }
+          );
+          console.log("Marked chapter as read for user:", userId); // Debug
+        } catch (error) {
+          // 1.2.15: MongoDB trả về lỗi
+          // 1.2.16: Tiếp tục trả nội dung chương
+          console.error("Error marking chapter as read:", error); // Debug
+        }
+      }
+      // 1.0.16: Trả nội dung chương về chapterroutes.js
+      // 1.0.17: chapterroutes.js trả về res.status(200).json({content})
+      console.log("Chapter fetched:", chapter); // Debug
+      res.status(200).json({ content: chapter });
+    } else {
+      // 1.3.13: Trả lỗi nếu không tìm thấy chương
+      // 1.3.14: Trả res.status(404).json({message: "Không tìm thấy chương"})
+      console.log("Chapter not found for chapterId:", chapterId); // Debug
       res.status(404).json({ message: "Không tìm thấy chương" });
     }
-    //4.1.6. Tạo 1 bình luận mới bằng cách truyền vào mảng chương truyện/sách 1 đối tượng
-    // gồm username và nội dung vào mảng chương truyện/sách.
-    chapter.comments.push({ user, content });
-    //4.1.7. Lưu vào cơ sở dữ liệu.
-    await book.save();
-    //4.1.8. Đặt status code là 200 và trả về frontend một json với thông diệp là bình luận đã được thêm
-    //  và một mảng chương truyện/sách vừa được thêm bình luận vào.
-    res.status(200).json({ message: "Bình luận đã được thêm", chapter });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: "Lỗi server" });
+    // 1.3.13: Trả lỗi nếu truy vấn thất bại
+    // 1.3.14: Trả res.status(404).json({message: "Không tìm thấy chương"})
+    console.error("Error fetching chapter:", error); // Debug
+    res.status(404).json({ message: "Không tìm thấy chương" });
   }
 };
-export { getChapter, addComment };
+
+// 1.0.14: Đánh dấu chương đã đọc
+const markChapterAsRead = async (req, res) => {
+  const chapterId = req.params.id;
+  const userId = req.user?.id;
+  try {
+    if (!userId) {
+      throw new Error("Chưa đăng nhập");
+    }
+    // 1.0.12: Xác minh chương tồn tại
+    const book = await Book.findOne({ "chapters._id": chapterId });
+    if (!book || !book.chapters.id(chapterId)) {
+      return res.status(404).json({ message: "Không tìm thấy chương" });
+    }
+    // 1.0.15: MongoDB xác nhận cập nhật
+    const user = await User.updateOne(
+      { "_id": userId },
+      { $addToSet: { readChapters: chapterId } }
+    );
+    if (user.modifiedCount === 0) {
+      throw new Error("Không thể cập nhật trạng thái đã đọc");
+    }
+    console.log("Marked chapter as read for user:", userId); // Debug
+    res.status(200).json({ message: "Đã đánh dấu chương đã đọc" });
+  } catch (error) {
+    // 1.2.15: MongoDB trả về lỗi
+    console.error("Error marking chapter as read:", error); // Debug
+    res.status(500).json({ message: "Lỗi khi đánh dấu chương đã đọc" });
+  }
+};
+
+export { getChapter, markChapterAsRead };
