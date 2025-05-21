@@ -13,6 +13,7 @@ const BookDetail = () => {
     const fetchBook = async () => {
       try {
         const response = await axios.get(`${API_BASE_URL}/books/${params}`);
+        console.log(response.data);
         setBook(response.data);
       } catch (error) {
         console.log(`Error ${error}`);

@@ -16,7 +16,7 @@ const ChapterDetailScreen = () => {
   useEffect(() => {
     const fetchChapter = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/chapters/${param}`);
+        const response = await axios.get(`/api/chapters/${param}`);
         setChapter(response.data);
         setComments(response.data.comments);
       } catch (error) {
