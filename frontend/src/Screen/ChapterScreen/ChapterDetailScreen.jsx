@@ -27,6 +27,13 @@ const ChapterDetailScreen = () => {
     };
     fetchChapter();
   }, [param]);
+  useEffect(() => {
+    axios.post("/api/savedbooks/save-or-update", {
+      userId: currentUser._id,
+      bookId,
+      chapterId,
+    });
+  }, []);
   const handleCommentSubmit = async (event) => {
     event.preventDefault();
     try {
