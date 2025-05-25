@@ -11,22 +11,6 @@ const Login = () => {
   const [success, setSuccess] = useState("");
   const navigate = useNavigate();
 
-  //   const handleSubmit = async (e) => {
-  //     e.preventDefault();
-  //     setError("");
-  //     setSuccess("");
-  //     try {
-  //       const res = await axios.post(
-  //         `${API_BASE_URL}/login`,
-  //         { email, password },
-  //         { withCredentials: true }
-  //       );
-  //       //   setSuccess(res.data.message);
-  //       navigate("/savedbooks");
-  //     } catch (err) {
-  //       setError(err.response?.data?.message || "Đăng nhập thất bại");
-  //     }
-  //   };
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");

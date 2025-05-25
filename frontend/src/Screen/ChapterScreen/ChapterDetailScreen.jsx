@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getCurrentParams } from "../../utils/utils";
 import { useLocation } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+// import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 

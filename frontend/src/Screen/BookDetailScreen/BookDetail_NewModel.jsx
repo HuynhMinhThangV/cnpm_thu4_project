@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { set } from "mongoose";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -19,30 +20,62 @@ const BookDetail_NewModel = () => {
         withCredentials: true,
       });
       setBookData(res.data);
+      setIsBookmarked(res.data.isBookmarked || false);
     };
     fetchDetail();
   }, [bookId]);
 
-  const handleBookmark = async () => {
+  //   const handleBookmark = async () => {
+  //     setBookmarkLoading(true);
+  //     try {
+  //       await axios.post(
+  //         `${API_BASE_URL}/savedbooks/bookmark`,
+  //         { bookId: bookId }, // chapter là state chứa chương đang đọc
+  //         { withCredentials: true }
+  //       );
+  //       setIsBookmarked(true);
+  //       alert("Đã lưu sách vào tủ truyện (đánh dấu bookmark)!");
+  //     } catch (err) {
+  //       if (err.response?.status === 401) {
+  //         alert("Bạn cần đăng nhập để lưu sách.");
+  //         // redirect login nếu muốn
+  //       } else {
+  //         alert("Lỗi khi lưu sách, vui lòng thử lại.");
+  //         console.error(err);
+  //       }
+  //     } finally {
+  //       setBookmarkLoading(false);
+  //     }
+  //   };
+
+  const toggleBookmark = async () => {
     setBookmarkLoading(true);
-    console.log("1");
     try {
-      console.log("2");
-      await axios.post(
-        `${API_BASE_URL}/savedbooks/bookmark`,
-        { bookId: bookId }, // chapter là state chứa chương đang đọc
-        { withCredentials: true }
-      );
-      console.log("3");
-      setIsBookmarked(true);
-      console.log("4");
-      alert("Đã lưu sách vào tủ truyện (đánh dấu bookmark)!");
+      if (!isBookmarked) {
+        // Thêm bookmark
+        await axios.post(
+          `${API_BASE_URL}/savedbooks/bookmark`,
+          { bookId: bookId },
+          { withCredentials: true }
+        );
+        setIsBookmarked(true);
+        alert("Đã lưu sách vào tủ truyện (đánh dấu bookmark)!");
+      } else {
+        // Bỏ bookmark
+        await axios.post(
+          `${API_BASE_URL}/savedbooks/unbookmark`,
+          { bookId: bookId },
+          { withCredentials: true }
+        );
+        setIsBookmarked(false);
+        alert("Đã bỏ đánh dấu bookmark sách.");
+      }
     } catch (err) {
       if (err.response?.status === 401) {
         alert("Bạn cần đăng nhập để lưu sách.");
         // redirect login nếu muốn
       } else {
-        alert("Lỗi khi lưu sách, vui lòng thử lại.");
+        alert("Lỗi khi cập nhật bookmark, vui lòng thử lại.");
         console.error(err);
       }
     } finally {
@@ -116,8 +149,8 @@ const BookDetail_NewModel = () => {
                 Mục Lục
               </button>
               <button
-                onClick={handleBookmark}
-                disabled={bookmarkLoading || isBookmarked}
+                onClick={toggleBookmark}
+                disabled={bookmarkLoading}
                 // className="bg-yellow-600 hover:bg-yellow-700 px-4 py-1 rounded text-sm"
                 className={`px-3 py-1 rounded ${
                   isBookmarked
@@ -125,7 +158,7 @@ const BookDetail_NewModel = () => {
                     : "bg-yellow-500 hover:bg-yellow-400"
                 }`}
               >
-                {isBookmarked ? "Đã lưu" : "Lưu vào tủ truyện"}
+                {isBookmarked ? "Đã lưu (Bỏ lưu)" : "Lưu vào tủ truyện"}
               </button>
             </div>
 

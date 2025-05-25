@@ -32,6 +32,25 @@ router.post("/bookmark", authMiddleware, async (req, res) => {
   }
 });
 
+router.post("/unbookmark", authMiddleware, async (req, res) => {
+  try {
+    const { bookId } = req.body;
+
+    const saved = await SavedService.removeBookmark(req.user._id, bookId);
+    if (!saved) {
+      return res
+        .status(404)
+        .json({ message: "Không tìm thấy sách đã lưu để bỏ bookmark" });
+    }
+    saved.bookmarked = false; // cập nhật trạng thái bookmark
+    await saved.save(); // lưu lại thay đổi
+    res.status(200).json(saved);
+  } catch (error) {
+    console.error("Lỗi khi bỏ bookmark:", error);
+    res.status(500).json({ error: "Lỗi server khi bỏ đánh dấu bookmark." });
+  }
+});
+
 router.post("/last-read", async (req, res) => {
   try {
     const { bookId, chapterId } = req.body;

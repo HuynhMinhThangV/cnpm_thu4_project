@@ -89,11 +89,15 @@ class SavedService {
 
   static async removeBookmark(userId, bookId) {
     const saved = await SavedBook.findOne({ userId, bookId });
-    if (saved) {
-      saved.bookmarked = false;
-      await saved.save();
+    // if (saved) {
+    //   saved.bookmarked = false;
+    //   await saved.save();
+    // }
+    if (!saved) {
+      throw new Error("Bookmark not found");
     }
-    return saved;
+    saved.bookmarked = false; // chỉ cập nhật trạng thái bookmark
+    return await saved.save();
   }
 
   // static async toggleBookmark(userId, bookId) {
