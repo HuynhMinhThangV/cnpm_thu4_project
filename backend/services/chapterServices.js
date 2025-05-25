@@ -1,23 +1,38 @@
 import Book from "../models/bookmodel.js";
 
+// 1.0.11: chapterroutes.js gọi chapter-services.js (await Book.findOne({"chapters._id": chapterId}))
 const getChapter = async (req, res) => {
   const chapterId = req.params.id;
+  console.log("Received chapterId:", chapterId); // Debug
   try {
-    const book = await Book.findOne({ "chapters._id": chapterId });
-    if (!book) {
-      res.status(404).json({ message: "Không tìm thấy chapter" });
+    // 1.0.12: chapter-services.js truy vấn MongoDB Atlas (doctruyenDB, collection Books, trường chapters)
+    const book = await Book.findOne({ "chapters._id": chapterId }, { "chapters.$": 1 });
+    console.log("Book found:", book); // Debug
+    // 1.0.13: MongoDB trả về nội dung chương
+    if (!book || book.chapters.length === 0) {
+      // 1.2.13: chapter-services.js trả về lỗi cho chapterroutes.js
+      // 1.2.14: chapterroutes.js phản hồi với res.status(404).json({message: "Không tìm thấy chương"})
+      console.log("Chapter not found for chapterId:", chapterId); // Debug
+      return res.status(404).json({ message: "Không tìm thấy chương" });
     }
-    const chapter = book.chapters.id(chapterId);
-    if (!chapter) {
-      return res.status(404).json({ message: "Không tìm thấy chương." });
-    }
-
-    return res.json(chapter);
+    const chapter = book.chapters[0];
+    console.log("Chapter extracted:", chapter); // Debug
+    // 1.0.14: chapter-services.js trả nội dung chương về chapterroutes.js
+    // 1.0.15: chapterroutes.js trả về res.status(200).json(chapter)
+    return res.status(200).json(chapter);
   } catch (error) {
-    console.error("Lỗi khi truy vấn chapter:", error);
+    // 1.2.13: chapter-services.js trả về lỗi cho chapterroutes.js
+    // 1.2.14: chapterroutes.js phản hồi với res.status(404).json({message: "Không tìm thấy chương"})
+    // 8.1.1: In ra console để người phát triển debug
+    console.error("Error fetching chapter:", {
+      message: error.message,
+      stack: error.stack,
+    });
     return res.status(500).json({ message: "Lỗi server." });
   }
 };
+
+// 4.1.5: Lấy chapterId, content, user từ request
 const addComment = async (req, res) => {
   //4.1.5 Lấy chapterId,content,user từ request
   const { chapterId, content, user } = req.body;
@@ -54,4 +69,5 @@ const addComment = async (req, res) => {
     res.status(500).json({ message: "Lỗi server" });
   }
 };
+
 export { getChapter, addComment };
