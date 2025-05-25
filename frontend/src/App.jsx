@@ -1,35 +1,33 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import reactLogo from "./assets/react.svg";
+import viteLogo from "/vite.svg";
+import "./App.css";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import BookDetail from "./Screen/BookDetailScreen/BookDetail";
+import HomePage from "./Screen/HomePageScreen/HomePage";
+import ChapterDetailScreen from "./Screen/ChapterScreen/ChapterDetailScreen";
+import SavedBooks from "./Screen/LibraryScreen/SavedBook";
+import Menu from "./components/Menu";
+import Login from "./Screen/Login";
+import BookDetail_NewModel from "./Screen/BookDetailScreen/BookDetail_NewModel";
+import ChapterPage from "./Screen/ChapterScreen/Chapter";
+import MainPage from "./Screen/HomePageScreen/MainPage";
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <BrowserRouter>
+      <Menu />
+      <Routes>
+        <Route path="/" element={<MainPage />} />
+        {/* <Route path="/books/:id" element={<BookDetail />} /> */}
+        <Route path="/books/:bookId" element={<BookDetail_NewModel />} />
+        {/* <Route path="/books/:id/:chapterId" element={<ChapterDetailScreen />} /> */}
+        <Route path="/chapter/:chapterId" element={<ChapterPage />} />
+        <Route path="/savedbooks" element={<SavedBooks />} />
+        <Route path="/login" element={<Login />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
