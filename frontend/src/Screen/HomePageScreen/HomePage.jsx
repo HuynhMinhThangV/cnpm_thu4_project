@@ -128,18 +128,23 @@ const HomePage = () => {
                 className="bg-white rounded-2xl shadow hover:shadow-xl transition duration-300 border border-gray-200 hover:border-gray-400 overflow-hidden cursor-pointer"
               >
                 <img
-                  src={book.images?.[0]?.path || "https://via.placeholder.com/150"}
+                  src={
+                    book.images?.[0]?.path || "https://via.placeholder.com/150"
+                  }
                   alt={book.title || "Không có tiêu đề"}
                   className="w-full h-48 object-cover"
                 />
                 <div className="p-4">
                   <p className="text-xs text-gray-500 mb-1 truncate">
-                    {book.genres?.map((g) => g.name).join(", ") || "Không có thể loại"}
+                    {book.genres?.map((g) => g.name).join(", ") ||
+                      "Không có thể loại"}
                   </p>
                   <h3 className="text-lg font-semibold text-gray-800 line-clamp-2">
                     {book.title || "Không có tiêu đề"}
                   </h3>
-                  <p className="text-sm text-gray-600 mt-1">{book.author || "Không rõ tác giả"}</p>
+                  <p className="text-sm text-gray-600 mt-1">
+                    {book.author || "Không rõ tác giả"}
+                  </p>
                 </div>
               </div>
             ))}

@@ -19,7 +19,7 @@ const ChapterDetailScreen = () => {
   useEffect(() => {
     const fetchChapter = async () => {
       try {
-        const response = await axios.get(`/api/chapters/${param}`);
+        const response = await axios.get(`${API_BASE_URL}/chapters/${param}`);
         setChapter(response.data);
         setComments(response.data.comments);
       } catch (error) {
@@ -163,4 +163,3 @@ const ChapterDetailScreen = () => {
 };
 
 export default ChapterDetailScreen;
-
