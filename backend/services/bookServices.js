@@ -7,7 +7,9 @@ const getBooks = async (req, res) => {
     console.log("Books fetched:", books); // Debug
     res.status(200).json(books);
   } catch (error) {
-    console.error("Error fetching books:", error); // Debug
+    // 1.1.5: Trả lỗi nếu truy vấn thất bại
+    // 1.1.6: Trả res.status(404).json({message: "Không tìm thấy truyện"})
+    console.error("Error fetching books:", error);
     res.status(404).json({ message: "Không tìm thấy truyện" });
   }
 };
@@ -33,7 +35,7 @@ const getBook = async (req, res) => {
   } catch (error) {
     // 1.1.5: Trả lỗi nếu truy vấn thất bại
     // 1.1.6: Trả res.status(404).json({message: "Không tìm thấy truyện"})
-    console.error("Error fetching book:", error); // Debug
+    console.error("Error fetching book:", error);
     res.status(404).json({ message: "Không tìm thấy truyện" });
   }
 };

@@ -24,10 +24,15 @@ const HomePage = () => {
         const data = Array.isArray(response.data) ? response.data : [];
         setBooks(data);
       } catch (error) {
-        // 1.1.7: Hiển thị thông báo lỗi nếu không tìm thấy truyện
-        console.error("Error fetching books:", error.response?.data, error);
+        // 1.1.7: HomePage.jsx hiển thị thông báo lỗi
+        console.error("Error fetching books:", {
+          message: error.message,
+          response: error.response?.data,
+        });
         setError(error.response?.data?.message || "Không tìm thấy truyện");
-        toast.error(error.response?.data?.message || "Không tìm thấy truyện", { position: "top-right" });
+        toast.error(error.response?.data?.message || "Không tìm thấy truyện", {
+          position: "top-right",
+        });
         setBooks([]);
       } finally {
         setLoading(false);
@@ -36,28 +41,36 @@ const HomePage = () => {
     fetchBooks();
   }, []);
 
-  // 1.0.2: Gửi GET /api/books/:bookId khi nhấp vào truyện
+  // 1.0.1: Độc giả nhấp vào truyện từ HomePage.jsx
+  // 1.0.2: HomePage.jsx gửi GET /api/books/:bookId đến bookroutes.js
   const handleBookClick = async (bookId) => {
     try {
       console.log("Fetching book with bookId:", bookId); // Debug
       const response = await axios.get(`${API_BASE_URL}/books/${bookId}`);
-      // 1.0.3: (Backend) bookroutes.js gọi book-services.js (await Book.findOne({"_id": bookId}))
-      // 1.0.4: (Backend) book-services.js truy vấn MongoDB Atlas (doctruyenDB, collection Books)
-      // 1.0.5: (Backend) MongoDB trả về dữ liệu truyện và danh sách chương
-      // 1.0.6: (Backend) book-services.js trả dữ liệu về bookroutes.js
+      // 1.0.3: bookroutes.js gọi book-services.js (await Book.findOne({"_id": bookId}))
+      // 1.0.4: book-services.js truy vấn MongoDB Atlas (doctruyenDB, collection Books)
+      // 1.0.5: MongoDB trả về dữ liệu truyện và danh sách chương
+      // 1.0.6: book-services.js trả dữ liệu về bookroutes.js
       // 1.0.7: bookroutes.js trả về res.status(200).json({book, chapters})
       console.log("Book response:", response.data); // Debug
       if (!response.data.book) {
         throw new Error("Không tìm thấy truyện");
       }
-      // 1.0.8: Chuyển hướng đến BookDetail.jsx với dữ liệu
-      navigate(`/books/${bookId}`, { state: { book: response.data.book, chapters: response.data.chapters } });
+      // 1.0.8: HomePage.jsx chuyển hướng đến BookDetail.jsx, hiển thị chi tiết truyện và danh sách chương
+      navigate(`/books/${bookId}`, {
+        state: { book: response.data.book, chapters: response.data.chapters },
+      });
     } catch (error) {
-      // 1.1.5: (Backend) book-services.js trả lỗi
-      // 1.1.6: (Backend) bookroutes.js trả res.status(404).json({message: "Không tìm thấy truyện"})
-      // 1.1.7: Hiển thị thông báo lỗi
-      console.error("Error fetching book:", error.response?.data, error);
-      toast.error(error.response?.data?.message || "Không tìm thấy truyện", { position: "top-right" });
+      // 1.1.5: book-services.js trả lỗi cho bookroutes.js
+      // 1.1.6: bookroutes.js trả res.status(404).json({message: "Không tìm thấy truyện"})
+      // 1.1.7: HomePage.jsx hiển thị thông báo lỗi
+      console.error("Error fetching book:", {
+        message: error.message,
+        response: error.response?.data,
+      });
+      toast.error(error.response?.data?.message || "Không tìm thấy truyện", {
+        position: "top-right",
+      });
     }
   };
 
@@ -70,7 +83,7 @@ const HomePage = () => {
     );
   }
 
-  // 1.1.7: Hiển thị thông báo lỗi
+  // 1.1.7: HomePage.jsx hiển thị thông báo lỗi
   if (error) {
     return (
       <div className="text-center py-10 text-red-600 text-xl bg-gray-100 min-h-screen">
@@ -108,10 +121,10 @@ const HomePage = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {books.map((book) => (
-              // 1.0.1: Độc giả nhấp vào một truyện cụ thể
+              // 1.0.1: Độc giả nhấp vào truyện từ HomePage.jsx
               <div
                 key={book._id}
-                onClick={() => handleBookClick(book._id)}
+                onClick={() => handleBookClick(book._id.toString())}
                 className="bg-white rounded-2xl shadow hover:shadow-xl transition duration-300 border border-gray-200 hover:border-gray-400 overflow-hidden cursor-pointer"
               >
                 <img

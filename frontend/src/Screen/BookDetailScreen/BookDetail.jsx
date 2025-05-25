@@ -1,50 +1,66 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { getCurrentParams } from "../../utils/utils";
+import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const BookDetail = () => {
-  const { state } = useLocation();
+  const location = useLocation();
   const [book, setBook] = useState(null);
-  const [chapters, setChapters] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const params = getCurrentParams(location);
 
-  // 1.0.8: Nhận dữ liệu từ HomePage.jsx và hiển thị chi tiết truyện
+  // 1.0.8: HomePage.jsx chuyển hướng đến BookDetail.jsx, hiển thị chi tiết truyện và danh sách chương
   useEffect(() => {
-    try {
-      console.log("Received book data:", state?.book); // Debug
-      console.log("Received chapters:", state?.chapters); // Debug
-      if (!state?.book || !state?.chapters) {
-        throw new Error("Không tìm thấy truyện");
+    const fetchBook = async () => {
+      try {
+        console.log("Received book data from state:", location.state?.book); // Debug
+        console.log("Received chapters from state:", location.state?.chapters); // Debug
+        // Ưu tiên dữ liệu từ state
+        if (location.state?.book && location.state?.chapters) {
+          setBook(location.state.book);
+          setBook((prev) => ({ ...prev, chapters: location.state.chapters }));
+        } else {
+          // Nếu không có state, gọi API
+          const response = await axios.get(`${API_BASE_URL}/books/${params}`);
+          console.log("Book response:", response.data); // Debug
+          setBook(response.data);
+        }
+      } catch (error) {
+        // 1.1.7: BookDetail.jsx hiển thị thông báo lỗi
+        console.error("Error loading book:", {
+          message: error.message,
+          response: error.response?.data,
+        });
+        setError(error.response?.data?.message || "Không tìm thấy truyện");
+        toast.error(error.response?.data?.message || "Không tìm thấy truyện", {
+          position: "top-right",
+        });
+      } finally {
+        setLoading(false);
       }
-      setBook(state.book);
-      setChapters(state.chapters);
-    } catch (error) {
-      // 1.1.7: Hiển thị thông báo lỗi nếu không có dữ liệu
-      console.error("Error loading book:", error); // Debug
-      setError(error.message || "Không tìm thấy truyện");
-      toast.error(error.message || "Không tìm thấy truyện", { position: "top-right" });
-    } finally {
-      setLoading(false);
-    }
-  }, [state]);
+    };
+    fetchBook();
+  }, [params, location.state]);
 
   // 1.0.8: Hiển thị trạng thái loading
   if (loading) {
     return (
       <div className="text-center py-10 text-gray-600 text-xl bg-gray-100 min-h-screen">
-        Đang tải dữ liệu truyện...
+        Đang tải dữ liệu sách...
       </div>
     );
   }
 
-  // 1.1.7: Hiển thị thông báo lỗi
+  // 1.1.7: BookDetail.jsx hiển thị thông báo lỗi
   if (error || !book) {
     return (
       <div className="text-center py-10 text-red-600 text-xl bg-gray-100 min-h-screen">
         {error || "Không tìm thấy truyện"}
-        {/* 1.1.8: Độc giả có thể thử lại hoặc quay lại trang trước */}
+        {/* 1.1.8: Độc giả thử lại hoặc quay lại trang trước */}
         <div className="mt-4">
           <button
             onClick={() => window.location.reload()}
@@ -60,7 +76,7 @@ const BookDetail = () => {
     );
   }
 
-  // 1.0.8: Hiển thị chi tiết truyện và danh sách chương
+  // 1.0.8: HomePage.jsx chuyển hướng đến BookDetail.jsx, hiển thị chi tiết truyện và danh sách chương
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 bg-gray-100 min-h-screen">
       <ToastContainer position="top-right" autoClose={3000} />
@@ -80,30 +96,27 @@ const BookDetail = () => {
             <p className="text-gray-700 leading-relaxed mb-4">{book.description}</p>
           )}
           <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
-            {book.publisher && (
-              <p>
-                <span className="font-semibold">Nhà xuất bản:</span> {book.publisher}
-              </p>
-            )}
-            {book.publishedYear && (
-              <p>
-                <span className="font-semibold">Năm xuất bản:</span> {book.publishedYear}
-              </p>
-            )}
+            <p>
+              <span className="font-semibold">Nhà xuất bản:</span>{" "}
+              {book.publisher || book.author || "Không rõ"}
+            </p>
+            <p>
+              <span className="font-semibold">Năm xuất bản:</span>{" "}
+              {book.publishedYear || book.status || "Không rõ"}
+            </p>
           </div>
         </div>
       </div>
 
-      {chapters?.length > 0 ? (
+      {book.chapters?.length > 0 ? (
         <div className="mt-10">
           <h2 className="text-xl font-bold text-gray-800 mb-4">Danh sách chương</h2>
           <ul className="space-y-2">
-            {chapters.map((chapter) => (
-              // 1.0.9: Độc giả nhấp vào một chương cụ thể
-              // 1.0.10: BookDetail.jsx chuyển hướng đến ChapterDetail.jsx
+            {book.chapters.map((chapter) => (
+              // 1.0.9: Độc giả nhấp vào chương trong BookDetail.jsx
               <li key={chapter._id}>
                 <Link
-                  to={`/books/${book._id}/${chapter._id}`}
+                  to={`/books/${book._id}/${chapter._id.toString()}`}
                   className="text-blue-600 hover:underline"
                 >
                   📘 {chapter.title || "Chương không có tiêu đề"}
