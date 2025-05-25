@@ -25,7 +25,7 @@ const getBook = async (req, res) => {
       // 1.0.6: Trả dữ liệu về bookroutes.js
       // 1.0.7: bookroutes.js trả về res.status(200).json({book, chapters})
       console.log("Book fetched:", book); // Debug
-      res.status(200).json({ book, chapters: book.chapters });
+      res.status(200).json({book: book, chapters: book.chapters });
     } else {
       // 1.1.5: Trả lỗi nếu không tìm thấy truyện
       // 1.1.6: Trả res.status(404).json({message: "Không tìm thấy truyện"})
