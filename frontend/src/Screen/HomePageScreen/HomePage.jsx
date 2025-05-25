@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import SearchComponent from "./SearchComponent";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const HomePage = () => {
@@ -10,6 +11,18 @@ const HomePage = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  // 2.1.13: Nhận kết quả tìm kiếm từ SearchComponent
+  const handleSearchResults = (results) => {
+    if (!results || results.length === 0) {
+      // 2.2.19: Hiển thị thông báo "No book found"
+      setError("No book found");
+      setBooks([]);
+    } else {
+      setError(null);
+      setBooks(results);
+    }
+  };
 
   // Lấy danh sách truyện để hiển thị
   useEffect(() => {
@@ -106,7 +119,21 @@ const HomePage = () => {
     <>
       <ToastContainer position="top-right" autoClose={3000} />
       <div className="max-w-[1400px] mx-auto px-4 py-10 mt-20 bg-gray-100 min-h-screen">
-        {books.length === 0 ? (
+        {/* 2.1.1: Nhúng SearchComponent để nhập tiêu chí tìm kiếm */}
+        <SearchComponent onResults={handleSearchResults} />
+        {error ? (
+          <div className="text-center py-10 text-red-600 text-xl">
+            {error}
+            <div className="mt-4">
+              <button
+                onClick={() => window.location.reload()}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md"
+              >
+                Thử lại
+              </button>
+            </div>
+          </div>
+        ) : books.length === 0 ? (
           <div className="text-center py-10 text-gray-600 text-xl">
             Không có truyện nào để hiển thị
             <div className="mt-4">

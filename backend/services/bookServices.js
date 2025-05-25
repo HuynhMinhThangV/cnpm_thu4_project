@@ -40,4 +40,25 @@ const getBook = async (req, res) => {
   }
 };
 
-export { getBooks, getBook };
+// 2.1.5: BookService nhận yêu cầu tìm kiếm từ BookController
+const searchBook = async (criteria) => {
+  // 2.1.6: BookService gọi BookModel để truy vấn
+  // criteria: { title, author, genres, keyword }
+  const query = {};
+  if (criteria.title) query.title = { $regex: criteria.title, $options: "i" };
+  if (criteria.author) query.author = { $regex: criteria.author, $options: "i" };
+  if (criteria.genres) query["genres.name"] = { $in: criteria.genres };
+  if (criteria.keyword) {
+    query.$or = [
+      { title: { $regex: criteria.keyword, $options: "i" } },
+      { author: { $regex: criteria.keyword, $options: "i" } },
+      { description: { $regex: criteria.keyword, $options: "i" } },
+    ];
+  }
+  // 2.1.7: BookModel gửi yêu cầu executeQuery(criteria) đến MongoDB
+  const books = await Book.find(query);
+  // 2.1.9: BookModel trả kết quả cho BookService
+  return books;
+};
+
+export { getBooks, getBook, searchBook };
