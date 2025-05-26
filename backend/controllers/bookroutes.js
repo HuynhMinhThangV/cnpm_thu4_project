@@ -5,10 +5,6 @@ const router = express.Router();
 // Nhận GET /api/books để lấy danh sách truyện
 router.route("/").get(getBooks);
 
-// 1.0.2: Nhận GET /api/books/:id từ HomePage.jsx
-// 1.1.6: Trả res.status(404).json({message: "Không tìm thấy truyện"}) nếu lỗi
-router.route("/:id").get(getBook);
-
 // 2.1.4: BookController nhận yêu cầu tìm kiếm từ ApiService
 router.route("/search").get(async (req, res) => {
   // 2.1.5: Gọi BookService.findBook(criteria)
@@ -30,5 +26,9 @@ router.route("/search").get(async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
+// 1.0.2: Nhận GET /api/books/:id từ HomePage.jsx
+// 1.1.6: Trả res.status(404).json({message: "Không tìm thấy truyện"}) nếu lỗi
+router.route("/:id").get(getBook);
 
 export default router;

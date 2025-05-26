@@ -58,6 +58,9 @@ const searchBook = async (criteria) => {
   // 2.1.7: BookModel gửi yêu cầu executeQuery(criteria) đến MongoDB
   const books = await Book.find(query);
   // 2.1.9: BookModel trả kết quả cho BookService
+  if (!books || books.length === 0) {
+    throw new Error("No book found");
+  }
   return books;
 };
 
