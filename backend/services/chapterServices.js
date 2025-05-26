@@ -1,28 +1,23 @@
 import Book from "../models/bookmodel.js";
 
-// 1.0.11: chapterroutes.js gọi chapter-services.js (await Book.findOne({"chapters._id": chapterId}))
 const getChapter = async (req, res) => {
   const chapterId = req.params.id;
   console.log("Received chapterId:", chapterId); // Debug
   try {
-    // 1.0.12: chapter-services.js truy vấn MongoDB Atlas (doctruyenDB, collection Books, trường chapters)
+    // 1.0.12: chapterroutes.js gọi chapter-services.js (await Book.findOne({"chapters._id": chapterId}))
     const book = await Book.findOne({ "chapters._id": chapterId }, { "chapters.$": 1 });
-    console.log("Book found:", book); // Debug
-    // 1.0.13: MongoDB trả về nội dung chương
+    // 1.0.13: chapter-services.js truy vấn MongoDB Atlas (doctruyendb, collection Books, trường chapters)
+    // 1.0.14: MongoDB trả về nội dung chương
     if (!book || book.chapters.length === 0) {
-      // 1.2.13: chapter-services.js trả về lỗi cho chapterroutes.js
-      // 1.2.14: chapterroutes.js phản hồi với res.status(404).json({message: "Không tìm thấy chương"})
-      console.log("Chapter not found for chapterId:", chapterId); // Debug
+      // 1.2.14: chapter-services.js trả về lỗi cho chapterroutes.js.
+      // 1.2.15: chapterroutes.js phản hồi với res.status(404).json({message: "Không tìm thấy chương"})
       return res.status(404).json({ message: "Không tìm thấy chương" });
     }
     const chapter = book.chapters[0];
-    console.log("Chapter extracted:", chapter); // Debug
-    // 1.0.14: chapter-services.js trả nội dung chương về chapterroutes.js
-    // 1.0.15: chapterroutes.js trả về res.status(200).json(chapter)
+    // 1.0.15: chapter-services.js trả dữ liệu cho chapterroutes.js
+    // 1.0.16: chapterroutes.js trả về res.status(200).json(chapter)
     return res.status(200).json(chapter);
   } catch (error) {
-    // 1.2.13: chapter-services.js trả về lỗi cho chapterroutes.js
-    // 1.2.14: chapterroutes.js phản hồi với res.status(404).json({message: "Không tìm thấy chương"})
     // 8.1.1: In ra console để người phát triển debug
     console.error("Error fetching chapter:", {
       message: error.message,

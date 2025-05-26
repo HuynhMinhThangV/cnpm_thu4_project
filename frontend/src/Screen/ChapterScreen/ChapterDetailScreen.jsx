@@ -15,16 +15,15 @@ const ChapterDetailScreen = () => {
   const [loading, setLoading] = useState(true);
   const param = getCurrentParams(location) || chapterId;
 
-  // 1.0.10: BookDetail.jsx chuyển hướng đến ChapterDetail.jsx, gửi GET /api/chapters/:chapterId đến chapterroutes.js
+  // 1.0.10: BookDetail.jsx chuyển hướng đến ChapterDetail.jsx
   useEffect(() => {
     const fetchChapter = async () => {
       try {
+        // 1.0.11 ChapterDetail.jsx gửi GET /api/chapters/:chapterId đến chapterroutes.js
         const response = await axios.get(`${API_BASE_URL}/chapters/${param}`);
         setChapter(response.data);
         setComments(response.data.comments);
       } catch (error) {
-        // 1.2.13: chapter-services.js trả về lỗi cho chapterroutes.js
-        // 1.2.14: chapterroutes.js phản hồi với res.status(404).json({message: "Không tìm thấy chương"})
         // 1.2.15: ChapterDetail.jsx hiển thị thông báo lỗi
         console.error("Error fetching chapter:", {
           message: error.message,
@@ -83,7 +82,6 @@ const ChapterDetailScreen = () => {
     }
   };
 
-  // 1.0.16: ChapterDetail.jsx hiển thị nội dung chương
   if (loading) {
     return (
       <div className="text-center py-10 text-gray-600 text-xl bg-gray-100 min-h-screen">
@@ -92,12 +90,12 @@ const ChapterDetailScreen = () => {
     );
   }
 
-  // 1.2.15: ChapterDetail.jsx hiển thị thông báo lỗi
+  // 1.2.16: ChapterDetail.jsx hiển thị thông báo lỗi
   if (!chapter) {
     return (
       <div className="text-center py-10 text-red-600 text-xl bg-gray-100 min-h-screen">
         Không tìm thấy chương
-        {/* 1.2.16: Độc giả có thể thử lại hoặc quay lại trang chi tiết truyện */}
+        {/* 1.2.17: Độc giả có thể thử lại hoặc quay lại trang chi tiết truyện */}
         <div className="mt-4">
           <button
             onClick={() => window.location.reload()}
@@ -116,7 +114,7 @@ const ChapterDetailScreen = () => {
     );
   }
 
-  // 1.0.16: ChapterDetail.jsx hiển thị nội dung chương
+  // 1.0.17: ChapterDetail.jsx hiển thị nội dung chương
   return (
     <div className="max-w-3xl mx-auto px-4 py-8 bg-gray-100 min-h-screen">
       <ToastContainer position="top-right" autoClose={3000} />

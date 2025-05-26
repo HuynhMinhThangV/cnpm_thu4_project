@@ -13,7 +13,6 @@ const BookDetail = () => {
   const [error, setError] = useState(null);
   const params = getCurrentParams(location);
 
-  // 1.0.8: HomePage.jsx chuyển hướng đến BookDetail.jsx, hiển thị chi tiết truyện và danh sách chương
   useEffect(() => {
     const fetchBook = async () => {
       try {
@@ -46,7 +45,6 @@ const BookDetail = () => {
     fetchBook();
   }, [params, location.state]);
 
-  // 1.0.8: Hiển thị trạng thái loading
   if (loading) {
     return (
       <div className="text-center py-10 text-gray-600 text-xl bg-gray-100 min-h-screen">
@@ -76,7 +74,6 @@ const BookDetail = () => {
     );
   }
 
-  // 1.0.8: HomePage.jsx chuyển hướng đến BookDetail.jsx, hiển thị chi tiết truyện và danh sách chương
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 bg-gray-100 min-h-screen">
       <ToastContainer position="top-right" autoClose={3000} />
