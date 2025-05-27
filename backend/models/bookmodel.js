@@ -82,5 +82,7 @@ const bookSchema = mongoose.Schema({
   },
 });
 
+//2.1.8/2.2.8: Tạo model Book và export kết quả cho BookService
+//2.1.9/2.2.9: BookModel trả kết quả cho BookService
 const Book = mongoose.model("Book", bookSchema);
 export default Book;

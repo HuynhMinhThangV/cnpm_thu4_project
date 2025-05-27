@@ -34,7 +34,7 @@ const getBook = async (req, res) => {
   }
 };
 
-// 2.1.5: BookService nhận yêu cầu tìm kiếm từ BookController
+// 2.1.5: BookService nhận yêu cầu tìm kiếm từ BookRoutes
 const searchBook = async (criteria) => {
   // 2.1.6: BookService gọi BookModel để truy vấn
   // criteria: { title, author, genres, keyword }
@@ -51,7 +51,7 @@ const searchBook = async (criteria) => {
   }
   // 2.1.7: BookModel gửi yêu cầu executeQuery(criteria) đến MongoDB
   const books = await Book.find(query);
-  // 2.1.9: BookModel trả kết quả cho BookService
+  // 2.1.10/2.2.10: BookService trả kết quả cho BookRoutes
   return books;
 };
 

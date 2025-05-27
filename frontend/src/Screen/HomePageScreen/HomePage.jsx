@@ -15,7 +15,7 @@ const HomePage = () => {
   // 2.1.13: Nhận kết quả tìm kiếm từ SearchComponent
   const handleSearchResults = (results) => {
     if (!results || results.length === 0) {
-      // 2.2.19: Hiển thị thông báo "No book found"
+      // 2.2.13: Hiển thị thông báo "Khôn tìm thấy truyện"
       setError("Không tìm thấy truyện");
       setBooks([]);
     } else {

@@ -16,7 +16,7 @@ const SearchComponent = ({ onResults }) => {
     // 2.1.2: Gọi ApiService.searchBook(criteria)
     const genresArr = criteria.genres ? criteria.genres.split(",").map(g => g.trim()) : undefined;
     const results = await searchBook({ ...criteria, genres: genresArr });
-    // 2.1.13: Trả kết quả về HomePage để hiển thị
+    // 2.1.13: Hiển thị kết quả tìm kiếm
     onResults(results);
     setLoading(false);
   };
