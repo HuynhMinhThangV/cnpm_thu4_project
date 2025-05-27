@@ -16,7 +16,7 @@ const HomePage = () => {
   const handleSearchResults = (results) => {
     if (!results || results.length === 0) {
       // 2.2.19: Hiển thị thông báo "No book found"
-      setError("No book found");
+      setError("Không tìm thấy truyện");
       setBooks([]);
     } else {
       setError(null);
